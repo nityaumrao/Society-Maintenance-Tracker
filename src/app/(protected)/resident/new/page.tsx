@@ -1,3 +1,9 @@
-export default function Page() {
-  return <h1>Resident Dashboard</h1>;
+import ComplaintForm from '@/components/complaint/ComplaintForm';
+
+export default function NewComplaintPage() {
+    return (
+        <main className="mx-auto max-w-3xl p-8">
+            <ComplaintForm />
+        </main>
+    );
 }

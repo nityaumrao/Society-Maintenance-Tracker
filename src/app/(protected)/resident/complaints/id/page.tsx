@@ -1,8 +1,8 @@
-export default function AdminDashboardPage() {
+export default function ComplaintDetailsPage() {
     return (
         <div className="p-6">
             <h1 className="text-3xl font-bold">
-                Admin Dashboard
+                Complaint Details
             </h1>
         </div>
     );
