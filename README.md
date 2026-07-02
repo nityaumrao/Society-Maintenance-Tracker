@@ -1,136 +1,305 @@
-# Authentication-and-Authorization
+# 🏢 Society Maintenance Tracker
 
-This repository contains a Next.js application focused on authentication and authorization flows, UI and related backend API routes. It includes client pages and components for signup, login, password-reset flows and protected routes.
-
-Summary
-- Framework: Next.js (App Router)
-- Styling: Tailwind CSS
-- Animations: GSAP / Framer Motion (where used)
-- Purpose: Demonstration and implementation of authentication flows, protected routes, and UI components for an event-style site.
-
-## Table of Contents
-- Getting started
-- Development
-- Build & Production
-- Environment variables
-- Project structure
-- Key components
-- Contributing
-- License
-
-## Getting started
-
-Prerequisites
-- Node.js 18+ (or the version your monorepo requires)
-- pnpm (recommended) — or npm / yarn
-
-Install dependencies
-
-```powershell
-pnpm install
-# or
-npm install
-```
-
-Run development server
-
-```powershell
-pnpm dev
-# or
-npm run dev
-```
-
-Open http://localhost:3000 in your browser.
-
-## Development
-
-- Routes and pages live under `src/app/` (App Router).
-- API endpoints are under `src/app/api/`.
-- UI components live in `src/components/`.
-- Utilities, db helpers and services are under `src/lib/` and `src/services/`.
-
-Tip: Many pages use client components (`"use client"`) for animations and interactive UX.
-
-## Build & Production
-
-Build for production
-
-```powershell
-pnpm build
-pnpm start
-```
-
-Deploy: This project can be deployed to Vercel, Netlify, or any Node-compatible host. If using Vercel, the app router is supported out of the box.
-
-## Environment variables
-
-Create a `.env.local` with the variables your app needs. Example variables used in this project (update names to match the actual code):
-
-```
-DATABASE_URL=postgres://user:pass@host:5432/dbname
-NEXTAUTH_URL=https://your-site.com
-NEXTAUTH_SECRET=some-secret
-SMTP_URL=smtp://user:pass@smtp.example.com:587
-STRIPE_SECRET_KEY=sk_live_...
-TWILIO_SID=ACxxxx
-TWILIO_TOKEN=xxxx
-```
-
-Only add secrets to `.env*` files and never commit them to source control.
-
-## Project structure (high level)
-
-Key folders under `src/`:
-
-- `app/` — Next.js app routes and pages (App Router)
-- `app/(auth)` — Authentication pages and flows (signup, login, password reset)
-- `app/(protected)` — Layout and pages for protected routes
-- `components/` — Reusable UI components (auth forms, landing, dashboard, ui primitives)
-- `lib/` — Utilities, db connectors and helpers
-- `services/` — Business logic (auth services, mail, token, user helpers)
-
-Example files / entry points:
-- `src/app/page.tsx` — Landing / home page
-- `src/app/layout.tsx` — Global layout
-- `src/app/api/auth/...` — NextAuth and API routes
-
-## Key components and features
-
-- Authentication flows: Sign up, verify email, login, reset password, new password
-- Protected routes and server-side checks
-- Preloader and page transition animations (GSAP / Tailwind utility classes)
-- Lenis-based smooth scroll on some landing pages
-
-## Troubleshooting & common commands
-
-- Run linting (if configured): `pnpm lint`
-- Run tests (if present): `pnpm test`
-- Format code: `pnpm format` or via your editor setup
-
-## Contributing
-
-1. Fork the repo
-2. Create a new branch: `feature/xyz`
-3. Make changes and add tests
-4. Open a pull request describing the change
-
-Please follow the repository's code style and commit message guidelines.
-
-## Where to find things
-
-- Authentication pages: `src/app/(auth)`
-- Page transition overlay component: `src/app/(routes)/_components/PageTransition.tsx` (controls tile animations)
-- Landing scene & hero: `src/components/landing/*`
-
-## License
-
-This project does not include a license file. Add a `LICENSE` if you want to open-source it (MIT / Apache-2.0 are common choices).
+A full-stack web application that helps apartment societies efficiently manage maintenance complaints, notices, and resident communication. Residents can submit complaints with optional photos, while administrators track progress, assign priorities, post notices, and monitor maintenance activities through a dashboard.
 
 ---
 
-If you want, I can:
-- Add a `CONTRIBUTING.md` with PR and branch rules
-- Add example `.env.local.example` with variable names used by the app
-- Add automated scripts for lint/test/build in package.json
+# 🚀 Features
 
-If you'd like me to write one of those now, tell me which and I'll add it.
+## Resident
+
+- Register and Login
+- Email Verification
+- Raise Maintenance Complaints
+- Upload Complaint Photos (Optional)
+- Track Complaint Status
+- View Complete Complaint History
+- View Society Notices
+
+---
+
+## Admin
+
+- View All Complaints
+- Filter Complaints by Status, Category, and Date
+- Update Complaint Status
+- Set Complaint Priority
+- Mark Complaints as Overdue
+- Create Important Notices
+- View Dashboard Statistics
+
+---
+
+## Complaint Lifecycle
+
+```
+Resident
+      │
+      ▼
+Raise Complaint
+      │
+      ▼
+OPEN
+      │
+      ▼
+IN_PROGRESS
+      │
+      ▼
+RESOLVED
+      │
+      ▼
+CLOSED
+```
+
+Every status change is automatically recorded in the Complaint History table.
+
+---
+
+# 📊 Dashboard
+
+The admin dashboard provides:
+
+- Total Complaints
+- Open Complaints
+- In Progress Complaints
+- Resolved Complaints
+- High Priority Complaints
+- Overdue Complaints
+- Complaints by Category
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+- Next.js 16 (App Router)
+- React 19
+- Tailwind CSS
+- shadcn/ui
+- TypeScript
+
+## Backend
+
+- Next.js API Routes
+- Auth.js
+- Drizzle ORM
+
+## Database
+
+- PostgreSQL
+- Neon Database
+
+## Authentication
+
+- Credentials Login
+- Email Verification
+- OAuth Ready
+- Role-Based Authorization
+
+## Email
+
+- Resend
+
+---
+
+# 📂 Project Structure
+
+```
+src/
+│
+├── app/
+│   ├── (auth)/
+│   ├── (protected)/
+│   └── api/
+│
+├── components/
+│   ├── complaint/
+│   ├── dashboard/
+│   ├── notice/
+│   └── ui/
+│
+├── lib/
+│   ├── dbconfig/
+│   ├── queries/
+│   └── helpers/
+│
+└── services/
+```
+
+---
+
+# 🗄 Database Tables
+
+- User
+- Account
+- Complaint
+- ComplaintHistory
+- Notice
+- VerificationToken
+- ResetPasswordToken
+- TwoFactorTokens
+- TwoFactorConfirmation
+
+---
+
+# 🔐 Authentication
+
+The application uses **Auth.js** with role-based authentication.
+
+Supported features:
+
+- Email Verification
+- Secure Password Hashing
+- Forgot Password
+- Reset Password
+- Two-Factor Authentication
+- OAuth Support
+
+---
+
+# 📸 Complaint Management
+
+Residents can submit complaints with:
+
+- Title
+- Category
+- Description
+- Priority
+- Optional Photo
+
+Administrators can:
+
+- Update Status
+- Assign Priority
+- Add Resolution Notes
+- Track Complaint History
+
+---
+
+# 📢 Notice Board
+
+Administrators can:
+
+- Create Notices
+- Pin Important Notices
+- Notify Residents via Email
+
+Residents can:
+
+- View All Notices
+- View Pinned Notices
+
+---
+
+# 📈 Dashboard Analytics
+
+Displays:
+
+- Complaint Status Summary
+- Complaint Categories
+- Overdue Complaints
+- Priority Distribution
+
+---
+
+# ⚙️ Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/nityaumrao/Society-Maintenance-Tracker.git
+```
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Create a `.env` file
+
+```env
+DATABASE_URL=
+
+AUTH_SECRET=
+
+RESEND_API_KEY=
+
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+Generate database migrations
+
+```bash
+npm run drizzle:generate
+```
+
+Push schema
+
+```bash
+npm run drizzle:push
+```
+
+Run the development server
+
+```bash
+npm run dev
+```
+
+---
+
+# 📦 Available Scripts
+
+```bash
+npm run dev
+
+npm run build
+
+npm run start
+
+npm run drizzle:generate
+
+npm run drizzle:migrate
+
+npm run drizzle:push
+
+npm run lint
+```
+
+---
+
+# 🚀 Deployment
+
+Recommended platforms:
+
+- Vercel
+- Neon PostgreSQL
+- Resend
+
+---
+
+# 📄 Future Improvements
+
+- Real-time Notifications
+- Mobile Responsive Dashboard
+- Complaint Image Gallery
+- Admin Reports Export
+- SMS Notifications
+- Resident Profile Management
+
+---
+
+# 👩‍💻 Author
+
+**Nitya Umrao**
+
+B.Tech Computer Science (Cyber Security)
+
+Pranveer Singh Institute of Technology
+
+---
+
+# 📜 License
+
+This project is developed for academic purposes.
