@@ -22,7 +22,6 @@ export const userServices = async (payload: SignupRequestBody) => {
     const hashedPassword = await hashPassword(normalizedPayload.password)
 
     let newUser
-
     const fullName = [normalizedPayload.firstName, normalizedPayload.lastName]
         .map((value) => value.trim())
         .filter(Boolean)
@@ -39,37 +38,13 @@ export const userServices = async (payload: SignupRequestBody) => {
         if (isUniqueViolationError(error)) {
             throw new UserAlreadyExistsError(normalizedPayload.email)
         }
-
         throw error
     }
 
-    const verificationToken = await generateVerificationToken({
-        email: newUser.email,
-    })
-
-    const emailResult = await sendVerificationEmail(
-        newUser.email,
-        verificationToken.token,
-        newUser.name || undefined
-    )
-
-    if (!emailResult.success) {
-        console.error('Failed to send verification email:', emailResult.error)
-        // Still return success for user creation, but indicate email failed
-        return {
-            user: toPublicUser(newUser),
-            message:
-                'Account created successfully, but we could not send the verification email. Please request a new one.',
-            emailSent: false,
-        }
-    }
-
-    console.log('Verification token generated:', verificationToken)
-
+    // Directly return success without verification email
     return {
         user: toPublicUser(newUser),
-        message:
-            'Verification email has been sent to your email address. Please check your inbox.',
+        message: 'Account created successfully. You can now log in.',
         emailSent: true,
     }
 }
