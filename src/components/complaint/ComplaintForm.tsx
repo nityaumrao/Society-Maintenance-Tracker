@@ -14,6 +14,8 @@ export default function ComplaintForm() {
         description: '',
         priority: 'MEDIUM',
     })
+    const [photo, setPhoto] = useState<File | null>(null)
+    const [submitting, setSubmitting] = useState(false)
 
     const handleChange = (
         e: React.ChangeEvent<
@@ -28,8 +30,29 @@ export default function ComplaintForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        setSubmitting(true)
 
         try {
+            let imageUrl: string | null = null
+
+            if (photo) {
+                const uploadForm = new FormData()
+                uploadForm.append('file', photo)
+
+                const uploadRes = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: uploadForm,
+                })
+                const uploadData = await uploadRes.json()
+
+                if (!uploadRes.ok) {
+                    alert(uploadData.message || 'Failed to upload image')
+                    return
+                }
+
+                imageUrl = uploadData.url
+            }
+
             const response = await fetch('/api/complaints', {
                 method: 'POST',
                 headers: {
@@ -40,7 +63,7 @@ export default function ComplaintForm() {
                     description: formData.description,
                     category: formData.category,
                     priority: formData.priority,
-                    imageUrl: null, // Photo upload will be added later
+                    imageUrl,
                 }),
             })
 
@@ -55,6 +78,8 @@ export default function ComplaintForm() {
         } catch (error) {
             console.error(error)
             alert('Something went wrong')
+        } finally {
+            setSubmitting(false)
         }
     }
 
@@ -110,8 +135,28 @@ export default function ComplaintForm() {
                 <option value="HIGH">High</option>
             </select>
 
-            <Button className="w-full" type="submit">
-                Submit Complaint
+            <div>
+                <label
+                    htmlFor="complaint-photo"
+                    className="mb-2 block text-sm font-medium"
+                >
+                    Photo (optional)
+                </label>
+                <Input
+                    id="complaint-photo"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
+                />
+                {photo ? (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                        Selected: {photo.name}
+                    </p>
+                ) : null}
+            </div>
+
+            <Button className="w-full" type="submit" disabled={submitting}>
+                {submitting ? 'Submitting...' : 'Submit Complaint'}
             </Button>
         </form>
     )

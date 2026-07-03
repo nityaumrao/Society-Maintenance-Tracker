@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 import StatusBadge from '@/components/complaint/StatusBadge'
 import PriorityBadge from '@/components/complaint/PriorityBadge'
 import ComplaintTimeline from '@/components/complaint/ComplaintTimeline'
+import ComplaintImage from '@/components/complaint/ComplaintImage'
 import {
     Card,
     CardHeader,
@@ -169,6 +170,10 @@ export default function AdminComplaintDetailsPage() {
                         <strong className="text-foreground">Created:</strong>{' '}
                         {new Date(complaint.createdAt).toLocaleString()}
                     </p>
+                    <ComplaintImage
+                        imageUrl={complaint.imageUrl}
+                        alt={`Photo for ${complaint.title}`}
+                    />
                 </CardContent>
                 <CardFooter>
                     <Link

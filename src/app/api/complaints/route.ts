@@ -70,13 +70,18 @@ export async function POST(request: NextRequest) {
             )
         }
 
+        const imageUrl =
+            typeof body.imageUrl === 'string' && body.imageUrl.trim()
+                ? body.imageUrl.trim()
+                : null
+
         const complaint = await createComplaint({
             title,
             description,
             category,
             priority,
             residentId: session.user.id,
-            imageUrl: body.imageUrl,
+            imageUrl: imageUrl ?? undefined,
         })
 
         return NextResponse.json(

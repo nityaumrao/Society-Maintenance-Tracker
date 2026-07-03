@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
 import ComplaintTimeline from '@/components/complaint/ComplaintTimeline'
+import ComplaintImage from '@/components/complaint/ComplaintImage'
 import PriorityBadge from '@/components/complaint/PriorityBadge'
 import StatusBadge from '@/components/complaint/StatusBadge'
 
@@ -15,6 +16,7 @@ type Complaint = {
     category: string
     priority: 'LOW' | 'MEDIUM' | 'HIGH'
     status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED'
+    imageUrl: string | null
 }
 
 type HistoryItem = {
@@ -101,6 +103,11 @@ export default function ComplaintDetailsPage() {
                 </div>
 
                 <p className="mt-6 leading-7">{complaint.description}</p>
+
+                <ComplaintImage
+                    imageUrl={complaint.imageUrl}
+                    alt={`Photo for ${complaint.title}`}
+                />
             </section>
 
             <ComplaintTimeline history={history} />
