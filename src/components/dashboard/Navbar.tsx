@@ -8,6 +8,7 @@ import {
     FileText,
     LayoutDashboard,
     LogOut,
+    Megaphone,
     Menu,
     PlusCircle,
     Settings,
@@ -22,10 +23,17 @@ import { useCurrentRole } from '@/lib/hooks/useCurrentUserRole'
 const navItems = [
     { href: '/resident/complaints', label: 'My Complaints', icon: FileText },
     { href: '/resident/new', label: 'New Complaint', icon: PlusCircle },
+    { href: '/resident/notice-board', label: 'Notice Board', icon: Megaphone },
     {
         href: '/admin/complaints',
         label: 'Manage Complaints',
         icon: Shield,
+        adminOnly: true,
+    },
+    {
+        href: '/admin/notices',
+        label: 'Manage Notices',
+        icon: Megaphone,
         adminOnly: true,
     },
     {
