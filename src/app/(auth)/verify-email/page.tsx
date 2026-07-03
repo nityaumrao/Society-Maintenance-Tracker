@@ -12,15 +12,13 @@ export default function VerifyEmailPage() {
     const router = useRouter()
     const token = searchParams.get('token')
 
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string>('')
+    const [loading, setLoading] = useState(token ? true : false)
+    const [error, setError] = useState<string>(token ? '' : 'Invalid verification link. Token is missing.')
     const [success, setSuccess] = useState<string>('')
     const [resending, setResending] = useState(false)
 
     useEffect(() => {
         if (!token) {
-            setError('Invalid verification link. Token is missing.')
-            setLoading(false)
             return
         }
 

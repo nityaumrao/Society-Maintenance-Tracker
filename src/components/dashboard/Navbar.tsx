@@ -1,7 +1,7 @@
 'use client'
 
 import { signOutUser } from '@/lib/helpers/signOut'
-import { UserButton } from '../../lib/helpers/log-out-button'
+import { UserButton } from '@/lib/helpers/log-out-button'
 
 const Navbar = () => {
     return (

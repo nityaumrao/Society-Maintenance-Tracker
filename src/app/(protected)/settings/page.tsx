@@ -78,9 +78,13 @@ export default function SettingsPage() {
                             response.data.error || 'Failed to update settings',
                     })
                 }
-            } catch (error: any) {
-                const errorMessage =
-                    error.response?.data?.error || 'Something went wrong'
+            } catch (error) {
+                let errorMessage = 'Something went wrong'
+                if (axios.isAxiosError(error)) {
+                    errorMessage = error.response?.data?.error || errorMessage
+                } else if (error instanceof Error) {
+                    errorMessage = error.message
+                }
                 setMessage({ type: 'error', text: errorMessage })
             }
         })

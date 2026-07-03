@@ -24,32 +24,30 @@ export const UserButton = () => {
 
     return (
         <>
-            <LogOutButton>
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <Avatar>
-                            <AvatarImage
-                                src={session?.data?.user?.image || ''}
-                                alt="@{session?.data?.user?.name}"
-                            />
-                            <AvatarFallback>
-                                {session?.data?.user?.name?.charAt(0)}
-                            </AvatarFallback>
-                        </Avatar>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuLabel>
-                            {session?.data?.user?.name}
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <LogOutButton>Log Out</LogOutButton>
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </LogOutButton>
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <Avatar>
+                        <AvatarImage
+                            src={session?.data?.user?.image || ''}
+                            alt="@{session?.data?.user?.name}"
+                        />
+                        <AvatarFallback>
+                            {session?.data?.user?.name?.charAt(0)}
+                        </AvatarFallback>
+                    </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuLabel>
+                        {session?.data?.user?.name}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem>
+                            <LogOutButton>Log Out</LogOutButton>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </>
     )
 }

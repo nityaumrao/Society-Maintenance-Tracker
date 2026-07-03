@@ -213,13 +213,13 @@ export async function POST(request: Request) {
         }
 
         // If NextAuth returns an object with an `error` property, surface it as 401
-        if (typeof result === 'object' && (result as any).error) {
+        if (result && typeof result === 'object' && 'error' in result) {
             return NextResponse.json(
-                { message: (result as any).error || 'Invalid credentials' },
+                { message: (result as { error?: string }).error || 'Invalid credentials' },
                 { status: 401 }
             )
         }
-    } catch (error: any) {
+    } catch (error) {
         // Normalize AuthError or any thrown error to a JSON response instead of letting it 500
         try {
             if (error instanceof AuthError) {
@@ -234,14 +234,15 @@ export async function POST(request: Request) {
                     { status: 401 }
                 )
             }
-        } catch (e) {
+        } catch {
             // ignore instanceof checks failing due to different runtime shapes
         }
 
         // Fallback: return the error message with 500 so client can see what happened
         console.error('Sign-in error:', error)
+        const errorMessage = error instanceof Error ? error.message : 'Authentication error'
         return NextResponse.json(
-            { message: error?.message ?? 'Authentication error' },
+            { message: errorMessage },
             { status: 500 }
         )
     }
