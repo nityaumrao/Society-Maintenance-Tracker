@@ -4,7 +4,12 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import ComplaintCard from '@/components/complaint/ComplaintCard'
+import ComplaintFiltersBar from '@/components/complaint/ComplaintFiltersBar'
 import { Button } from '@/components/ui/button'
+import {
+    buildComplaintFilterQuery,
+    type ComplaintFilters,
+} from '@/lib/helpers/complaint-filters'
 
 type Complaint = {
     id: string
@@ -17,14 +22,28 @@ type Complaint = {
 
 export default function ResidentComplaintsPage() {
     const [complaints, setComplaints] = useState<Complaint[]>([])
+    const [filters, setFilters] = useState<ComplaintFilters>({})
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
 
     useEffect(() => {
-        async function fetchComplaints() {
+        let cancelled = false
+
+        const loadComplaints = async () => {
+            setLoading(true)
+            setError('')
+
             try {
-                const res = await fetch('/api/complaints')
+                const query = buildComplaintFilterQuery(filters)
+                const url = query.toString()
+                    ? `/api/complaints?${query.toString()}`
+                    : '/api/complaints'
+                const res = await fetch(url)
                 const data = await res.json()
+
+                if (cancelled) {
+                    return
+                }
 
                 if (!res.ok) {
                     setError(data.message || 'Failed to load complaints.')
@@ -32,24 +51,24 @@ export default function ResidentComplaintsPage() {
                 }
 
                 setComplaints(data.complaints || [])
-            } catch (error) {
-                console.error(error)
-                setError('Unable to load complaints.')
+            } catch (fetchError) {
+                console.error(fetchError)
+                if (!cancelled) {
+                    setError('Unable to load complaints.')
+                }
             } finally {
-                setLoading(false)
+                if (!cancelled) {
+                    setLoading(false)
+                }
             }
         }
 
-        fetchComplaints()
-    }, [])
+        void loadComplaints()
 
-    if (loading) {
-        return <div className="p-8">Loading complaints...</div>
-    }
-
-    if (error) {
-        return <div className="p-8 text-destructive">{error}</div>
-    }
+        return () => {
+            cancelled = true
+        }
+    }, [filters])
 
     return (
         <main className="mx-auto max-w-6xl p-8">
@@ -60,7 +79,15 @@ export default function ResidentComplaintsPage() {
                 </Button>
             </div>
 
-            {complaints.length === 0 ? (
+            <div className="mb-6">
+                <ComplaintFiltersBar filters={filters} onChange={setFilters} />
+            </div>
+
+            {loading ? (
+                <div>Loading complaints...</div>
+            ) : error ? (
+                <div className="text-destructive">{error}</div>
+            ) : complaints.length === 0 ? (
                 <div className="space-y-4">
                     <p>No complaints found.</p>
                     <Button asChild variant="outline">

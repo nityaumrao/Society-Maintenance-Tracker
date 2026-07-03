@@ -1,305 +1,63 @@
 # 🏢 Society Maintenance Tracker
 
-A full-stack web application that helps apartment societies efficiently manage maintenance complaints, notices, and resident communication. Residents can submit complaints with optional photos, while administrators track progress, assign priorities, post notices, and monitor maintenance activities through a dashboard.
+## Project Overview
+A full‑stack web application that helps apartment societies efficiently manage maintenance complaints, notices, and resident communication. Residents can submit complaints with optional photos, while administrators track progress, assign priorities, post important notices, and monitor key metrics via a dashboard.
 
----
+## Features
+- **Resident side**: Register / login, email verification, raise complaints, upload optional photos, track status, view complaint history, view society notices.
+- **Admin side**: View all complaints, filter by status/category, update status & priority, mark overdue, create important notices, email notifications, dashboard statistics.
+- **Common**: Role‑based authentication (resident, admin, super‑admin), two‑factor authentication, email integration (Resend), image upload to Cloudinary, PostgreSQL (Neon) via Drizzle ORM.
 
-# 🚀 Features
+## Tech Stack
+- **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS, shadcn/ui, TypeScript.
+- **Backend/API**: Next.js API Routes, Auth.js (NextAuth), Drizzle ORM, PostgreSQL (Neon).
+- **Services**: Cloudinary (image storage), Resend (email), Vercel/Netlify for deployment.
 
-## Resident
-
-- Register and Login
-- Email Verification
-- Raise Maintenance Complaints
-- Upload Complaint Photos (Optional)
-- Track Complaint Status
-- View Complete Complaint History
-- View Society Notices
-
----
-
-## Admin
-
-- View All Complaints
-- Filter Complaints by Status, Category, and Date
-- Update Complaint Status
-- Set Complaint Priority
-- Mark Complaints as Overdue
-- Create Important Notices
-- View Dashboard Statistics
-
----
-
-## Complaint Lifecycle
-
-```
-Resident
-      │
-      ▼
-Raise Complaint
-      │
-      ▼
-OPEN
-      │
-      ▼
-IN_PROGRESS
-      │
-      ▼
-RESOLVED
-      │
-      ▼
-CLOSED
-```
-
-Every status change is automatically recorded in the Complaint History table.
-
----
-
-# 📊 Dashboard
-
-The admin dashboard provides:
-
-- Total Complaints
-- Open Complaints
-- In Progress Complaints
-- Resolved Complaints
-- High Priority Complaints
-- Overdue Complaints
-- Complaints by Category
-
----
-
-# 🛠 Tech Stack
-
-## Frontend
-
-- Next.js 16 (App Router)
-- React 19
-- Tailwind CSS
-- shadcn/ui
-- TypeScript
-
-## Backend
-
-- Next.js API Routes
-- Auth.js
-- Drizzle ORM
-
-## Database
-
-- PostgreSQL
-- Neon Database
-
-## Authentication
-
-- Credentials Login
-- Email Verification
-- OAuth Ready
-- Role-Based Authorization
-
-## Email
-
-- Resend
-
----
-
-# 📂 Project Structure
-
+## Folder Structure
 ```
 src/
-│
-├── app/
-│   ├── (auth)/
-│   ├── (protected)/
-│   └── api/
-│
-├── components/
-│   ├── complaint/
-│   ├── dashboard/
-│   ├── notice/
-│   └── ui/
-│
-├── lib/
-│   ├── dbconfig/
-│   ├── queries/
-│   └── helpers/
-│
-└── services/
+│   app/                # Next.js routes & pages
+│   │   (auth)/         # Public auth pages
+│   │   (protected)/    # Protected UI pages (admin dashboard, etc.)
+│   │   api/            # API route handlers
+│   │       admin/      # Admin‑only endpoints
+│   │       complaints/ # Resident complaint endpoints
+│   │       notices/    # Notice board endpoints
+│   │       upload/     # Image upload endpoint
+│   │       dashboard/  # Dashboard stats endpoint
+│   │       auth/       # NextAuth catch‑all
+│   └── components/    # UI components (complaint cards, dashboard widgets, etc.)
+│   └── lib/           # Helpers, constants, DB config, queries
+│   └── services/      # Email services
+│   └── public/        # Static assets
+
+tests/                 # (if any) test suite
 ```
 
----
-
-# 🗄 Database Tables
-
-- User
-- Account
-- Complaint
-- ComplaintHistory
-- Notice
-- VerificationToken
-- ResetPasswordToken
-- TwoFactorTokens
-- TwoFactorConfirmation
-
----
-
-# 🔐 Authentication
-
-The application uses **Auth.js** with role-based authentication.
-
-Supported features:
-
-- Email Verification
-- Secure Password Hashing
-- Forgot Password
-- Reset Password
-- Two-Factor Authentication
-- OAuth Support
-
----
-
-# 📸 Complaint Management
-
-Residents can submit complaints with:
-
-- Title
-- Category
-- Description
-- Priority
-- Optional Photo
-
-Administrators can:
-
-- Update Status
-- Assign Priority
-- Add Resolution Notes
-- Track Complaint History
-
----
-
-# 📢 Notice Board
-
-Administrators can:
-
-- Create Notices
-- Pin Important Notices
-- Notify Residents via Email
-
-Residents can:
-
-- View All Notices
-- View Pinned Notices
-
----
-
-# 📈 Dashboard Analytics
-
-Displays:
-
-- Complaint Status Summary
-- Complaint Categories
-- Overdue Complaints
-- Priority Distribution
-
----
-
-# ⚙️ Installation
-
-Clone the repository
-
+## Installation
 ```bash
 git clone https://github.com/nityaumrao/Society-Maintenance-Tracker.git
-```
-
-Install dependencies
-
-```bash
+cd Society-Maintenance-Tracker/Authentication-and-Authorization
 npm install
 ```
 
-Create a `.env` file
-
-```env
-DATABASE_URL=
-
-AUTH_SECRET=
-
-RESEND_API_KEY=
-
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-Generate database migrations
-
+Create a `.env` file (see `.env.example` for keys) and run the database migrations:
 ```bash
-npm run drizzle:generate
+npm run drizzle:generate   # generate migration files
+npm run drizzle:push       # push schema to the database
 ```
 
-Push schema
-
-```bash
-npm run drizzle:push
-```
-
-Run the development server
-
+## Running Locally
 ```bash
 npm run dev
 ```
+The app will be available at `http://localhost:3000`.
 
----
+## Environment Variables
+All required variables are listed in the [.env.example](./.env.example) file.
 
-# 📦 Available Scripts
+## Deployment
+Deploy the `Authentication-and-Authorization` folder to Vercel or any platform that supports Next.js. Ensure the environment variables are set in the hosting dashboard.
 
-```bash
-npm run dev
-
-npm run build
-
-npm run start
-
-npm run drizzle:generate
-
-npm run drizzle:migrate
-
-npm run drizzle:push
-
-npm run lint
-```
-
----
-
-# 🚀 Deployment
-
-Recommended platforms:
-
-- Vercel
-- Neon PostgreSQL
-- Resend
-
----
-
-# 📄 Future Improvements
-
-- Real-time Notifications
-- Mobile Responsive Dashboard
-- Complaint Image Gallery
-- Admin Reports Export
-- SMS Notifications
-- Resident Profile Management
-
----
-
-# 👩‍💻 Author
-
-**Nitya Umrao**
-
-B.Tech Computer Science (Cyber Security)
-
-Pranveer Singh Institute of Technology
-
----
-
-# 📜 License
-
-This project is developed for academic purposes.
+## Screenshots
+*(Add screenshots of the dashboard, complaint form, notice board, etc. here before submission.)*

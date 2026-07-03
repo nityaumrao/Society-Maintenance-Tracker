@@ -1,8 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
+import { sortComplaintsWithOverdueFirst } from '@/lib/constants/complaints'
+import { parseComplaintFilters } from '@/lib/helpers/complaint-filters'
 import { getAllComplaintsWithResident } from '@/lib/queries/complaints/select'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         const session = await auth()
 
@@ -20,7 +22,10 @@ export async function GET() {
             return NextResponse.json({ message: 'Forbidden' }, { status: 403 })
         }
 
-        const complaints = await getAllComplaintsWithResident()
+        const filters = parseComplaintFilters(request.nextUrl.searchParams)
+        const complaints = sortComplaintsWithOverdueFirst(
+            await getAllComplaintsWithResident(filters)
+        )
 
         return NextResponse.json({
             success: true,

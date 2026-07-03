@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
+import { sortComplaintsWithOverdueFirst } from '@/lib/constants/complaints'
+import { parseComplaintFilters } from '@/lib/helpers/complaint-filters'
 import { createComplaint } from '@/lib/queries/complaints/insert'
 import { getComplaintsByResident } from '@/lib/queries/complaints/select'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         const session = await auth()
 
@@ -14,7 +16,10 @@ export async function GET() {
             )
         }
 
-        const complaints = await getComplaintsByResident(session.user.id)
+        const filters = parseComplaintFilters(request.nextUrl.searchParams)
+        const complaints = sortComplaintsWithOverdueFirst(
+            await getComplaintsByResident(session.user.id, filters)
+        )
 
         return NextResponse.json(
             {

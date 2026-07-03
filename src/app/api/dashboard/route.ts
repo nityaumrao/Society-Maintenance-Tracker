@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/auth'
+import {
+    COMPLAINT_CATEGORIES,
+    isComplaintOverdue,
+} from '@/lib/constants/complaints'
 import { getAllComplaints } from '@/lib/queries/complaints/select'
 
 export async function GET() {
@@ -13,7 +17,6 @@ export async function GET() {
             )
         }
 
-        // Check if user is admin or super admin
         const isAdmin =
             session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN'
 
@@ -28,11 +31,15 @@ export async function GET() {
         let inProgress = 0
         let resolved = 0
         let closed = 0
-        // TODO: Integrate overdue logic when due-date or deadline column is added to complaints schema
-        const overdue = 0
+        let overdue = 0
+
+        const byCategory = Object.fromEntries(
+            COMPLAINT_CATEGORIES.map((category) => [category, 0])
+        ) as Record<(typeof COMPLAINT_CATEGORIES)[number], number>
 
         complaints.forEach((complaint) => {
             total++
+
             if (complaint.status === 'OPEN') {
                 open++
             } else if (complaint.status === 'IN_PROGRESS') {
@@ -41,6 +48,16 @@ export async function GET() {
                 resolved++
             } else if (complaint.status === 'CLOSED') {
                 closed++
+            }
+
+            if (isComplaintOverdue(complaint)) {
+                overdue++
+            }
+
+            if (complaint.category in byCategory) {
+                byCategory[complaint.category as keyof typeof byCategory]++
+            } else {
+                byCategory.OTHER++
             }
         })
 
@@ -54,6 +71,7 @@ export async function GET() {
                     resolved,
                     closed,
                     overdue,
+                    byCategory,
                 },
             },
             { status: 200 }

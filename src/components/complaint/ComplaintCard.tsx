@@ -9,9 +9,11 @@ import {
     CardTitle,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { isComplaintOverdue } from '@/lib/constants/complaints'
 
 import StatusBadge from './StatusBadge'
 import PriorityBadge from './PriorityBadge'
+import OverdueBadge from './OverdueBadge'
 
 type ComplaintCardProps = {
     id: string
@@ -30,13 +32,18 @@ export default function ComplaintCard({
     priority,
     createdAt,
 }: ComplaintCardProps) {
+    const overdue = isComplaintOverdue({ status, createdAt })
+
     return (
         <Card>
             <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                     <CardTitle>{title}</CardTitle>
 
-                    <StatusBadge status={status} />
+                    <div className="flex flex-wrap items-center gap-2">
+                        {overdue ? <OverdueBadge /> : null}
+                        <StatusBadge status={status} />
+                    </div>
                 </div>
             </CardHeader>
 

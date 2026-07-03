@@ -15,7 +15,9 @@ import {
     FileText,
     ShieldAlert,
     Archive,
+    Tag,
 } from 'lucide-react'
+import { COMPLAINT_CATEGORIES } from '@/lib/constants/complaints'
 
 type Stats = {
     total: number
@@ -24,6 +26,7 @@ type Stats = {
     resolved: number
     closed: number
     overdue: number
+    byCategory: Record<string, number>
 }
 
 export default function AdminDashboardPage() {
@@ -92,7 +95,7 @@ export default function AdminDashboardPage() {
         )
     }
 
-    const statItems = [
+    const statusItems = [
         {
             title: 'Total Complaints',
             value: stats?.total ?? 0,
@@ -131,11 +134,11 @@ export default function AdminDashboardPage() {
         {
             title: 'Overdue Complaints',
             value: stats?.overdue ?? 0,
-            description: 'Complaints past their response SLA',
+            description: 'Open or in-progress complaints past SLA',
             icon: ShieldAlert,
             bg: 'red',
         },
-    ] as const;
+    ] as const
 
     return (
         <main className="w-full max-w-6xl space-y-8 px-4 py-8">
@@ -149,18 +152,42 @@ export default function AdminDashboardPage() {
                 </p>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {statItems.map((item, index) => (
-                    <StatsCard
-                        key={index}
-                        title={item.title}
-                        value={item.value}
-                        description={item.description}
-                        icon={item.icon}
-                        bg={item.bg}
-                    />
-                ))}{' '}
-            </div>
+            <section className="space-y-4">
+                <h2 className="text-lg font-semibold text-white">
+                    Complaints by Status
+                </h2>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {statusItems.map((item, index) => (
+                        <StatsCard
+                            key={index}
+                            title={item.title}
+                            value={item.value}
+                            description={item.description}
+                            icon={item.icon}
+                            bg={item.bg}
+                        />
+                    ))}
+                </div>
+            </section>
+
+            <section className="space-y-4">
+                <h2 className="text-lg font-semibold text-white">
+                    Complaints by Category
+                </h2>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {COMPLAINT_CATEGORIES.map((category) => (
+                        <StatsCard
+                            key={category}
+                            title={category.charAt(0) +
+                                category.slice(1).toLowerCase()}
+                            value={stats?.byCategory?.[category] ?? 0}
+                            description={`${category.toLowerCase()} complaints`}
+                            icon={Tag}
+                            bg="blue"
+                        />
+                    ))}
+                </div>
+            </section>
         </main>
     )
 }

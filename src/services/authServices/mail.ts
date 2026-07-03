@@ -8,6 +8,14 @@ import {
     TwoFactorEmailTemplate,
     TwoFactorEmailText,
 } from '@/lib/mail/two-factor-email'
+import {
+    ComplaintStatusEmailTemplate,
+    ComplaintStatusEmailText,
+} from '@/lib/mail/complaint-status-email'
+import {
+    ImportantNoticeEmailTemplate,
+    ImportantNoticeEmailText,
+} from '@/lib/mail/important-notice-email'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -105,6 +113,90 @@ export const sendTwoFactorTokenEmail = async (
         return { success: true, data }
     } catch (error) {
         console.error('Failed to send two-factor email:', error)
+        return { success: false, error }
+    }
+}
+
+export const sendComplaintStatusUpdatedEmail = async (
+    email: string,
+    complaintTitle: string,
+    oldStatus: string,
+    newStatus: string,
+    complaintId: string,
+    userName?: string
+) => {
+    const complaintLink = `${DOMAIN}/resident/complaints/${complaintId}`
+    const displayName = userName || email.split('@')[0]
+
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'LetsKraack <onboarding@resend.dev>',
+            to: email,
+            subject: `Complaint Status Updated: ${complaintTitle}`,
+            html: ComplaintStatusEmailTemplate({
+                userName: displayName,
+                complaintTitle,
+                oldStatus,
+                newStatus,
+                complaintLink,
+            }),
+            text: ComplaintStatusEmailText(
+                displayName,
+                complaintTitle,
+                oldStatus,
+                newStatus,
+                complaintLink
+            ),
+        })
+
+        if (error) {
+            console.error('Resend error:', error)
+            return { success: false, error }
+        }
+
+        return { success: true, data }
+    } catch (error) {
+        console.error('Failed to send complaint status email:', error)
+        return { success: false, error }
+    }
+}
+
+export const sendImportantNoticeEmail = async (
+    email: string,
+    noticeTitle: string,
+    noticeContent: string,
+    userName?: string
+) => {
+    const noticeLink = `${DOMAIN}/resident/notice-board`
+    const displayName = userName || email.split('@')[0]
+
+    try {
+        const { data, error } = await resend.emails.send({
+            from: 'LetsKraack <onboarding@resend.dev>',
+            to: email,
+            subject: `Important Notice: ${noticeTitle}`,
+            html: ImportantNoticeEmailTemplate({
+                userName: displayName,
+                noticeTitle,
+                noticeContent,
+                noticeLink,
+            }),
+            text: ImportantNoticeEmailText(
+                displayName,
+                noticeTitle,
+                noticeContent,
+                noticeLink
+            ),
+        })
+
+        if (error) {
+            console.error('Resend error:', error)
+            return { success: false, error }
+        }
+
+        return { success: true, data }
+    } catch (error) {
+        console.error('Failed to send important notice email:', error)
         return { success: false, error }
     }
 }

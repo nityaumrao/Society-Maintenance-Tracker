@@ -6,6 +6,8 @@ import {
 } from '@/lib/queries/complaints/select'
 import { updateComplaint } from '@/lib/queries/complaints/update'
 import { createComplaintHistory } from '@/lib/queries/complaints/history'
+import { findUserById } from '@/lib/queries/users/select'
+import { sendComplaintStatusUpdatedEmail } from '@/services/authServices/mail'
 
 const complaintStatuses = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as const
 const complaintPriorities = ['LOW', 'MEDIUM', 'HIGH'] as const
@@ -144,6 +146,21 @@ export async function PUT(
                 updatedBy: session.user.id,
                 remarks: auditNotes.join(' • ') || undefined,
             })
+        }
+
+        if (hasStatusChanged) {
+            const resident = await findUserById(complaint.residentId)
+
+            if (resident?.email) {
+                await sendComplaintStatusUpdatedEmail(
+                    resident.email,
+                    complaint.title,
+                    complaint.status,
+                    nextStatus,
+                    id,
+                    resident.name ?? undefined
+                )
+            }
         }
 
         return NextResponse.json({

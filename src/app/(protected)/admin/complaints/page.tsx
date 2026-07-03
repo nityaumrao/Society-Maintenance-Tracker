@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from 'react'
 
-
 import AdminComplaintCard from '@/components/complaint/AdminComplaintCard'
+import ComplaintFiltersBar from '@/components/complaint/ComplaintFiltersBar'
+import {
+    buildComplaintFilterQuery,
+    type ComplaintFilters,
+} from '@/lib/helpers/complaint-filters'
 
 type Complaint = {
     id: string
@@ -18,14 +22,28 @@ type Complaint = {
 
 export default function AdminComplaintsPage() {
     const [complaints, setComplaints] = useState<Complaint[]>([])
+    const [filters, setFilters] = useState<ComplaintFilters>({})
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
 
     useEffect(() => {
-        async function fetchComplaints() {
+        let cancelled = false
+
+        const loadComplaints = async () => {
+            setLoading(true)
+            setError('')
+
             try {
-                const res = await fetch('/api/admin/complaints')
+                const query = buildComplaintFilterQuery(filters)
+                const url = query.toString()
+                    ? `/api/admin/complaints?${query.toString()}`
+                    : '/api/admin/complaints'
+                const res = await fetch(url)
                 const data = await res.json()
+
+                if (cancelled) {
+                    return
+                }
 
                 if (!res.ok) {
                     setError(
@@ -37,30 +55,36 @@ export default function AdminComplaintsPage() {
                 }
 
                 setComplaints(data.complaints || [])
-            } catch (error) {
-                console.error(error)
-                setError('Unable to load complaints.')
+            } catch (fetchError) {
+                console.error(fetchError)
+                if (!cancelled) {
+                    setError('Unable to load complaints.')
+                }
             } finally {
-                setLoading(false)
+                if (!cancelled) {
+                    setLoading(false)
+                }
             }
         }
 
-        fetchComplaints()
-    }, [])
+        void loadComplaints()
 
-    if (loading) {
-        return <p className="p-8">Loading complaints...</p>
-    }
-
-    if (error) {
-        return <p className="p-8 text-destructive">{error}</p>
-    }
+        return () => {
+            cancelled = true
+        }
+    }, [filters])
 
     return (
         <main className="space-y-6 p-8">
             <h1 className="text-3xl font-bold">Complaint Management</h1>
 
-            {complaints.length === 0 ? (
+            <ComplaintFiltersBar filters={filters} onChange={setFilters} />
+
+            {loading ? (
+                <p>Loading complaints...</p>
+            ) : error ? (
+                <p className="text-destructive">{error}</p>
+            ) : complaints.length === 0 ? (
                 <p className="text-muted-foreground">No complaints found.</p>
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">

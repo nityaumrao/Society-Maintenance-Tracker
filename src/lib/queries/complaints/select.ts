@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm'
+import { and, desc, eq, gte, lte, SQL } from 'drizzle-orm'
 
 import { db } from '@/lib/dbconfig/db'
 import {
@@ -6,12 +6,51 @@ import {
     complaintHistoryTable,
     usersTable,
 } from '@/lib/dbconfig/schema'
+import { getDateRangeFromFilter } from '@/lib/helpers/complaint-filters'
+import type { ComplaintFilters } from '@/lib/helpers/complaint-filters'
 
-export async function getComplaintsByResident(residentId: string) {
+function buildFilterConditions(filters?: ComplaintFilters): SQL | undefined {
+    if (!filters) {
+        return undefined
+    }
+
+    const conditions: SQL[] = []
+    const { dateFrom, dateTo } = getDateRangeFromFilter(filters.date)
+
+    if (filters.category) {
+        conditions.push(eq(complaintsTable.category, filters.category))
+    }
+
+    if (filters.status) {
+        conditions.push(eq(complaintsTable.status, filters.status))
+    }
+
+    if (dateFrom) {
+        conditions.push(gte(complaintsTable.createdAt, dateFrom))
+    }
+
+    if (dateTo) {
+        conditions.push(lte(complaintsTable.createdAt, dateTo))
+    }
+
+    return conditions.length > 0 ? and(...conditions) : undefined
+}
+
+export async function getComplaintsByResident(
+    residentId: string,
+    filters?: ComplaintFilters
+) {
+    const conditions = [eq(complaintsTable.residentId, residentId)]
+    const filterConditions = buildFilterConditions(filters)
+
+    if (filterConditions) {
+        conditions.push(filterConditions)
+    }
+
     return await db
         .select()
         .from(complaintsTable)
-        .where(eq(complaintsTable.residentId, residentId))
+        .where(and(...conditions))
         .orderBy(desc(complaintsTable.createdAt))
 }
 
@@ -32,15 +71,24 @@ export async function getComplaintHistory(id: string) {
         .orderBy(desc(complaintHistoryTable.createdAt))
 }
 
-export async function getAllComplaints() {
-    return await db
-        .select()
-        .from(complaintsTable)
-        .orderBy(desc(complaintsTable.createdAt))
+export async function getAllComplaints(filters?: ComplaintFilters) {
+    const filterConditions = buildFilterConditions(filters)
+
+    const query = db.select().from(complaintsTable)
+
+    if (filterConditions) {
+        return await query
+            .where(filterConditions)
+            .orderBy(desc(complaintsTable.createdAt))
+    }
+
+    return await query.orderBy(desc(complaintsTable.createdAt))
 }
 
-export async function getAllComplaintsWithResident() {
-    return await db
+export async function getAllComplaintsWithResident(filters?: ComplaintFilters) {
+    const filterConditions = buildFilterConditions(filters)
+
+    const query = db
         .select({
             id: complaintsTable.id,
             title: complaintsTable.title,
@@ -57,5 +105,12 @@ export async function getAllComplaintsWithResident() {
         })
         .from(complaintsTable)
         .leftJoin(usersTable, eq(complaintsTable.residentId, usersTable.id))
-        .orderBy(desc(complaintsTable.createdAt))
+
+    if (filterConditions) {
+        return await query
+            .where(filterConditions)
+            .orderBy(desc(complaintsTable.createdAt))
+    }
+
+    return await query.orderBy(desc(complaintsTable.createdAt))
 }

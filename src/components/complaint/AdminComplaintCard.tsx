@@ -9,8 +9,9 @@ import { Button } from '@/components/ui/button'
 import { Eye } from 'lucide-react'
 import StatusBadge from '@/components/complaint/StatusBadge'
 import PriorityBadge from '@/components/complaint/PriorityBadge'
+import OverdueBadge from '@/components/complaint/OverdueBadge'
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
+import { isComplaintOverdue } from '@/lib/constants/complaints'
 
 type AdminComplaintCardProps = {
     id: string
@@ -33,6 +34,8 @@ export default function AdminComplaintCard({
     residentName,
     residentEmail,
 }: AdminComplaintCardProps) {
+    const overdue = isComplaintOverdue({ status, createdAt })
+
     return (
         <Card className="border transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
             <CardHeader className="flex flex-col space-y-1">
@@ -49,6 +52,7 @@ export default function AdminComplaintCard({
                 </div>
             </CardHeader>
             <CardContent className="flex items-center space-x-2 text-sm">
+                {overdue ? <OverdueBadge /> : null}
                 <StatusBadge status={status} />
                 <PriorityBadge priority={priority} />
                 <span className="ml-auto text-muted-foreground">

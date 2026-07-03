@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { createNotice } from '@/lib/queries/notices/insert'
 import { getAllNoticesWithAuthor } from '@/lib/queries/notices/select'
+import { getAllResidentEmails } from '@/lib/queries/users/select'
+import { sendImportantNoticeEmail } from '@/services/authServices/mail'
 
 export async function GET() {
     try {
@@ -71,6 +73,21 @@ export async function POST(request: NextRequest) {
             isImportant,
             createdBy: session.user.id,
         })
+
+        if (isImportant) {
+            const residents = await getAllResidentEmails()
+
+            await Promise.all(
+                residents.map((resident) =>
+                    sendImportantNoticeEmail(
+                        resident.email,
+                        title,
+                        content,
+                        resident.name ?? undefined
+                    )
+                )
+            )
+        }
 
         return NextResponse.json(
             {
