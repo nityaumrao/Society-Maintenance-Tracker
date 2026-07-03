@@ -11,7 +11,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
     title: 'Society Maintenance Tracker',
-    description: 'Apartment society complaint and maintenance management system.',
+    description:
+        'Apartment society complaint and maintenance management system.',
 }
 
 export default function RootLayout({
@@ -21,7 +22,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" className="dark">
-            <body className={`${poppins.variable} antialiased`}>
+            <body className={`${poppins.variable} font-sans antialiased`}>
                 {children}
             </body>
         </html>

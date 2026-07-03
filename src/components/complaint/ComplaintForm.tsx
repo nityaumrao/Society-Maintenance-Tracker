@@ -1,78 +1,69 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export default function ComplaintForm() {
+    const router = useRouter()
     const [formData, setFormData] = useState({
         title: '',
         category: '',
         description: '',
         priority: 'MEDIUM',
-    });
-
-    const [photo, setPhoto] = useState<File | null>(null);
+    })
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
     ) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
-        });
-    };
+        })
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+        e.preventDefault()
 
-    try {
-        const response = await fetch('/api/complaints', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                title: formData.title,
-                description: formData.description,
-                category: formData.category,
-                priority: formData.priority,
-                imageUrl: null, // Photo upload will be added later
-            }),
-        });
+        try {
+            const response = await fetch('/api/complaints', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: formData.title,
+                    description: formData.description,
+                    category: formData.category,
+                    priority: formData.priority,
+                    imageUrl: null, // Photo upload will be added later
+                }),
+            })
 
-        const data = await response.json();
+            const data = await response.json()
 
-        if (!response.ok) {
-            alert(data.message || 'Failed to submit complaint');
-            return;
+            if (!response.ok) {
+                alert(data.message || 'Failed to submit complaint')
+                return
+            }
+
+            router.push(`/resident/complaints/${data.complaint.id}`)
+        } catch (error) {
+            console.error(error)
+            alert('Something went wrong')
         }
-
-        alert('Complaint submitted successfully!');
-
-        setFormData({
-            title: '',
-            category: '',
-            description: '',
-            priority: 'MEDIUM',
-        });
-
-        setPhoto(null);
-    } catch (error) {
-        console.error(error);
-        alert('Something went wrong');
     }
-};
 
     return (
         <form
             onSubmit={handleSubmit}
             className="space-y-6 rounded-xl border p-6 shadow-sm"
         >
-            <h2 className="text-2xl font-bold">
-                Raise a Complaint
-            </h2>
+            <h2 className="text-2xl font-bold">Raise a Complaint</h2>
 
             <Input
                 name="title"
@@ -119,17 +110,9 @@ export default function ComplaintForm() {
                 <option value="HIGH">High</option>
             </select>
 
-            <Input
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                    setPhoto(e.target.files?.[0] ?? null)
-                }
-            />
-
             <Button className="w-full" type="submit">
                 Submit Complaint
             </Button>
         </form>
-    );
+    )
 }

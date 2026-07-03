@@ -14,19 +14,18 @@ export enum UserRole {
     SUPER_ADMIN = 'SUPER_ADMIN',
 }
 
-export const complaintStatusEnum = pgEnum("complaint_status", [
-    "OPEN",
-    "IN_PROGRESS",
-    "RESOLVED",
-    "CLOSED",
-]);
+export const complaintStatusEnum = pgEnum('complaint_status', [
+    'OPEN',
+    'IN_PROGRESS',
+    'RESOLVED',
+    'CLOSED',
+])
 
-export const complaintPriorityEnum = pgEnum("complaint_priority", [
-    "LOW",
-    "MEDIUM",
-    "HIGH",
-]);
-
+export const complaintPriorityEnum = pgEnum('complaint_priority', [
+    'LOW',
+    'MEDIUM',
+    'HIGH',
+])
 
 export const usersTable = pgTable('user', {
     id: text('id')
@@ -152,99 +151,88 @@ export const twoFactorConfirmationTable = pgTable('twoFactorConfirmation', {
         .unique(),
 })
 
-
 export type InsertUser = typeof usersTable.$inferInsert
 export type SelectUser = typeof usersTable.$inferSelect
 
-export const complaintsTable = pgTable("complaint", {
-    id: text("id")
+export const complaintsTable = pgTable('complaint', {
+    id: text('id')
         .primaryKey()
         .$defaultFn(() => crypto.randomUUID()),
 
-    title: text("title").notNull(),
+    title: text('title').notNull(),
 
-    description: text("description").notNull(),
+    description: text('description').notNull(),
 
-    category: text("category").notNull(),
+    category: text('category').notNull(),
 
-    priority: complaintPriorityEnum("priority")
-        .default("MEDIUM")
-        .notNull(),
+    priority: complaintPriorityEnum('priority').default('MEDIUM').notNull(),
 
-    status: complaintStatusEnum("status")
-        .default("OPEN")
-        .notNull(),
+    status: complaintStatusEnum('status').default('OPEN').notNull(),
 
-    residentId: text("residentId")
+    residentId: text('residentId')
         .references(() => usersTable.id, {
-            onDelete: "cascade",
+            onDelete: 'cascade',
         })
         .notNull(),
 
-    imageUrl: text("imageUrl"),
+    imageUrl: text('imageUrl'),
 
-    createdAt: timestamp("created_at", {
-        mode: "date",
+    createdAt: timestamp('created_at', {
+        mode: 'date',
     }).defaultNow(),
 
-    updatedAt: timestamp("updated_at", {
-        mode: "date",
+    updatedAt: timestamp('updated_at', {
+        mode: 'date',
     }).$onUpdate(() => new Date()),
-});
+})
 
-export const complaintHistoryTable = pgTable("complaintHistory", {
-    id: text("id")
+export const complaintHistoryTable = pgTable('complaintHistory', {
+    id: text('id')
         .primaryKey()
         .$defaultFn(() => crypto.randomUUID()),
 
-    complaintId: text("complaintId")
+    complaintId: text('complaintId')
         .references(() => complaintsTable.id, {
-            onDelete: "cascade",
+            onDelete: 'cascade',
         })
         .notNull(),
 
-    oldStatus: complaintStatusEnum("oldStatus"),
+    oldStatus: complaintStatusEnum('oldStatus'),
 
-    newStatus: complaintStatusEnum("newStatus").notNull(),
+    newStatus: complaintStatusEnum('newStatus').notNull(),
 
-    updatedBy: text("updatedBy")
-        .references(() => usersTable.id),
+    updatedBy: text('updatedBy').references(() => usersTable.id),
 
-    remarks: text("remarks"),
+    remarks: text('remarks'),
 
-    createdAt: timestamp("created_at", {
-        mode: "date",
+    createdAt: timestamp('created_at', {
+        mode: 'date',
     }).defaultNow(),
-});
+})
 
-export const noticesTable = pgTable("notice", {
-    id: text("id")
+export const noticesTable = pgTable('notice', {
+    id: text('id')
         .primaryKey()
         .$defaultFn(() => crypto.randomUUID()),
 
-    title: text("title").notNull(),
+    title: text('title').notNull(),
 
-    content: text("content").notNull(),
+    content: text('content').notNull(),
 
-    isPinned: boolean("isPinned")
-        .default(false)
-        .notNull(),
+    isPinned: boolean('isPinned').default(false).notNull(),
 
-    isImportant: boolean("isImportant")
-        .default(false)
-        .notNull(),
+    isImportant: boolean('isImportant').default(false).notNull(),
 
-    createdBy: text("createdBy")
-        .references(() => usersTable.id),
+    createdBy: text('createdBy').references(() => usersTable.id),
 
-    createdAt: timestamp("created_at", {
-        mode: "date",
+    createdAt: timestamp('created_at', {
+        mode: 'date',
     }).defaultNow(),
 
-    updatedAt: timestamp("updated_at", {
-        mode: "date",
+    updatedAt: timestamp('updated_at', {
+        mode: 'date',
     }).$onUpdate(() => new Date()),
-});
+})
 
 export type InsertAccount = typeof accountsTable.$inferInsert
 export type SelectAccount = typeof accountsTable.$inferSelect
@@ -267,15 +255,11 @@ export type InsertTwoFactorConfirmation =
 export type SelectTwoFactorConfirmation =
     typeof twoFactorConfirmationTable.$inferSelect
 
-export type InsertComplaint = typeof complaintsTable.$inferInsert;
-export type SelectComplaint = typeof complaintsTable.$inferSelect;
+export type InsertComplaint = typeof complaintsTable.$inferInsert
+export type SelectComplaint = typeof complaintsTable.$inferSelect
 
-export type InsertComplaintHistory =
-    typeof complaintHistoryTable.$inferInsert;
-export type SelectComplaintHistory =
-    typeof complaintHistoryTable.$inferSelect;
+export type InsertComplaintHistory = typeof complaintHistoryTable.$inferInsert
+export type SelectComplaintHistory = typeof complaintHistoryTable.$inferSelect
 
-export type InsertNotice =
-    typeof noticesTable.$inferInsert;
-export type SelectNotice =
-    typeof noticesTable.$inferSelect;
+export type InsertNotice = typeof noticesTable.$inferInsert
+export type SelectNotice = typeof noticesTable.$inferSelect

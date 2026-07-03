@@ -215,7 +215,11 @@ export async function POST(request: Request) {
         // If NextAuth returns an object with an `error` property, surface it as 401
         if (result && typeof result === 'object' && 'error' in result) {
             return NextResponse.json(
-                { message: (result as { error?: string }).error || 'Invalid credentials' },
+                {
+                    message:
+                        (result as { error?: string }).error ||
+                        'Invalid credentials',
+                },
                 { status: 401 }
             )
         }
@@ -240,11 +244,9 @@ export async function POST(request: Request) {
 
         // Fallback: return the error message with 500 so client can see what happened
         console.error('Sign-in error:', error)
-        const errorMessage = error instanceof Error ? error.message : 'Authentication error'
-        return NextResponse.json(
-            { message: errorMessage },
-            { status: 500 }
-        )
+        const errorMessage =
+            error instanceof Error ? error.message : 'Authentication error'
+        return NextResponse.json({ message: errorMessage }, { status: 500 })
     }
     return NextResponse.json(
         {

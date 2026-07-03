@@ -1,116 +1,84 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useEffect, useState } from 'react'
 
-import StatusBadge from '@/components/complaint/StatusBadge';
-import PriorityBadge from '@/components/complaint/PriorityBadge';
+
+import AdminComplaintCard from '@/components/complaint/AdminComplaintCard'
 
 type Complaint = {
-    id: string;
-    title: string;
-    category: string;
-    status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-    priority: 'LOW' | 'MEDIUM' | 'HIGH';
-    createdAt: string;
-    residentName: string | null;
-    residentEmail: string;
-};
+    id: string
+    title: string
+    category: string
+    status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED'
+    priority: 'LOW' | 'MEDIUM' | 'HIGH'
+    createdAt: string
+    residentName: string | null
+    residentEmail: string
+}
 
 export default function AdminComplaintsPage() {
-    const [complaints, setComplaints] = useState<Complaint[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [complaints, setComplaints] = useState<Complaint[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
 
     useEffect(() => {
         async function fetchComplaints() {
             try {
-                const res = await fetch('/api/admin/complaints');
-                const data = await res.json();
+                const res = await fetch('/api/admin/complaints')
+                const data = await res.json()
 
-                setComplaints(data.complaints || []);
+                if (!res.ok) {
+                    setError(
+                        res.status === 403
+                            ? 'Access denied. Admin role required.'
+                            : data.message || 'Failed to load complaints.'
+                    )
+                    return
+                }
+
+                setComplaints(data.complaints || [])
             } catch (error) {
-                console.error(error);
+                console.error(error)
+                setError('Unable to load complaints.')
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
         }
 
-        fetchComplaints();
-    }, []);
+        fetchComplaints()
+    }, [])
 
     if (loading) {
-        return <p className="p-8">Loading complaints...</p>;
+        return <p className="p-8">Loading complaints...</p>
+    }
+
+    if (error) {
+        return <p className="p-8 text-destructive">{error}</p>
     }
 
     return (
         <main className="space-y-6 p-8">
-            <h1 className="text-3xl font-bold">
-                Complaint Management
-            </h1>
+            <h1 className="text-3xl font-bold">Complaint Management</h1>
 
-            <div className="overflow-x-auto rounded-xl border">
-                <table className="w-full">
-                    <thead className="border-b bg-muted">
-                        <tr>
-                            <th className="p-4 text-left">Title</th>
-                            <th className="p-4 text-left">Resident</th>
-                            <th className="p-4 text-left">Category</th>
-                            <th className="p-4 text-left">Status</th>
-                            <th className="p-4 text-left">Priority</th>
-                            <th className="p-4 text-left">Created</th>
-                            <th className="p-4 text-left">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {complaints.map((complaint) => (
-                            <tr
-                                key={complaint.id}
-                                className="border-b"
-                            >
-                                <td className="p-4">
-                                    {complaint.title}
-                                </td>
-
-                                <td className="p-4">
-                                    {complaint.residentName ?? complaint.residentEmail}
-                                </td>
-
-                                <td className="p-4">
-                                    {complaint.category}
-                                </td>
-
-                                <td className="p-4">
-                                    <StatusBadge
-                                        status={complaint.status}
-                                    />
-                                </td>
-
-                                <td className="p-4">
-                                    <PriorityBadge
-                                        priority={complaint.priority}
-                                    />
-                                </td>
-
-                                <td className="p-4">
-                                    {new Date(
-                                        complaint.createdAt
-                                    ).toLocaleDateString()}
-                                </td>
-
-                                <td className="p-4">
-                                    <Link
-                                        href={`/admin/complaints/${complaint.id}`}
-                                        className="text-blue-600 hover:underline"
-                                    >
-                                        View
-                                    </Link>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+            {complaints.length === 0 ? (
+                <p className="text-muted-foreground">No complaints found.</p>
+            ) : (
+                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {complaints.map((complaint) => (
+                        <AdminComplaintCard
+                            key={complaint.id}
+                            id={complaint.id}
+                            title={complaint.title}
+                            category={complaint.category}
+                            status={complaint.status}
+                            priority={complaint.priority}
+                            createdAt={complaint.createdAt}
+                            residentName={complaint.residentName}
+                            residentEmail={complaint.residentEmail}
+                        />
+                    ))}
+                </div>
+            )}
         </main>
-    );
+    )
 }

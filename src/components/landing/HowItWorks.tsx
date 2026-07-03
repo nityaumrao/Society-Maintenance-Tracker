@@ -20,7 +20,8 @@ const HowItWorks = () => {
                                 Login or Register
                             </h3>
                             <p className="text-neutral-400">
-                                Create your account or securely sign in to access your society maintenance portal.
+                                Create your account or securely sign in to
+                                access your society maintenance portal.
                             </p>
                         </div>
                     </div>
@@ -33,7 +34,9 @@ const HowItWorks = () => {
                                 Raise a Complaint
                             </h3>
                             <p className="text-neutral-400">
-                                Submit maintenance issues by selecting a category, adding a description, and optionally uploading a photo.
+                                Submit maintenance issues by selecting a
+                                category, adding a description, and optionally
+                                uploading a photo.
                             </p>
                         </div>
                     </div>
@@ -46,7 +49,9 @@ const HowItWorks = () => {
                                 Track Complaint Status
                             </h3>
                             <p className="text-neutral-400">
-                                Monitor complaint progress with live status updates, priority changes, and a complete history.
+                                Monitor complaint progress with live status
+                                updates, priority changes, and a complete
+                                history.
                             </p>
                         </div>
                     </div>
@@ -59,7 +64,9 @@ const HowItWorks = () => {
                                 Issue Resolved
                             </h3>
                             <p className="text-neutral-400">
-                                Receive email notifications when your complaint is resolved and stay informed through important society notices.
+                                Receive email notifications when your complaint
+                                is resolved and stay informed through important
+                                society notices.
                             </p>
                         </div>
                     </div>

@@ -99,7 +99,10 @@ export function LightRays({
     ...props
 }: LightRaysProps) {
     const cycleDuration = Math.max(speed, 0.1)
-    const rays = useMemo(() => createRays(count, cycleDuration), [count, cycleDuration])
+    const rays = useMemo(
+        () => createRays(count, cycleDuration),
+        [count, cycleDuration]
+    )
 
     return (
         <div

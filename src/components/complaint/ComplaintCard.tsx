@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { Calendar, Flag, Tag } from 'lucide-react';
+import Link from 'next/link'
+import { Calendar, Flag, Tag } from 'lucide-react'
 
 import {
     Card,
@@ -7,20 +7,20 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 
-import StatusBadge from './StatusBadge';
-import PriorityBadge from './PriorityBadge';
+import StatusBadge from './StatusBadge'
+import PriorityBadge from './PriorityBadge'
 
 type ComplaintCardProps = {
-    id: string;
-    title: string;
-    category: string;
-    status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-    priority: 'LOW' | 'MEDIUM' | 'HIGH';
-    createdAt: string;
-};
+    id: string
+    title: string
+    category: string
+    status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED'
+    priority: 'LOW' | 'MEDIUM' | 'HIGH'
+    createdAt: string
+}
 
 export default function ComplaintCard({
     id,
@@ -65,5 +65,5 @@ export default function ComplaintCard({
                 </Button>
             </CardFooter>
         </Card>
-    );
+    )
 }

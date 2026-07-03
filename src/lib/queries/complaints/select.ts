@@ -1,27 +1,27 @@
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm'
 
-import { db } from '@/lib/dbconfig/db';
+import { db } from '@/lib/dbconfig/db'
 import {
     complaintsTable,
     complaintHistoryTable,
     usersTable,
-} from '@/lib/dbconfig/schema';
+} from '@/lib/dbconfig/schema'
 
 export async function getComplaintsByResident(residentId: string) {
     return await db
         .select()
         .from(complaintsTable)
         .where(eq(complaintsTable.residentId, residentId))
-        .orderBy(desc(complaintsTable.createdAt));
+        .orderBy(desc(complaintsTable.createdAt))
 }
 
 export async function getComplaintById(id: string) {
     const complaint = await db
         .select()
         .from(complaintsTable)
-        .where(eq(complaintsTable.id, id));
+        .where(eq(complaintsTable.id, id))
 
-    return complaint[0];
+    return complaint[0]
 }
 
 export async function getComplaintHistory(id: string) {
@@ -29,14 +29,14 @@ export async function getComplaintHistory(id: string) {
         .select()
         .from(complaintHistoryTable)
         .where(eq(complaintHistoryTable.complaintId, id))
-        .orderBy(desc(complaintHistoryTable.createdAt));
+        .orderBy(desc(complaintHistoryTable.createdAt))
 }
 
 export async function getAllComplaints() {
     return await db
         .select()
         .from(complaintsTable)
-        .orderBy(desc(complaintsTable.createdAt));
+        .orderBy(desc(complaintsTable.createdAt))
 }
 
 export async function getAllComplaintsWithResident() {
@@ -57,5 +57,5 @@ export async function getAllComplaintsWithResident() {
         })
         .from(complaintsTable)
         .leftJoin(usersTable, eq(complaintsTable.residentId, usersTable.id))
-        .orderBy(desc(complaintsTable.createdAt));
+        .orderBy(desc(complaintsTable.createdAt))
 }
